@@ -13,7 +13,6 @@ function TodoItem({ isRead, isArchived, text, onDelete, id, done, onArchived, ne
         container: {
             flexDirection: 'row',
             justifyContent: 'space-between',
-            alignItems: 'center',
             paddingVertical: 10,
             borderBottomWidth: StyleSheet.hairlineWidth
         },
@@ -58,38 +57,39 @@ function TodoItem({ isRead, isArchived, text, onDelete, id, done, onArchived, ne
 
 
     return (
-            <View style={styles.container} >
+        <View style={styles.container} >
 
-                <Pressable style={{ marginRight: 10 }} onPress={() => done(id)}>
+            <Pressable style={{ marginRight: 10 }} onPress={() => done(id)}>
 
                     <TextInput
                         ref={textInputRef}
                         style={styles.textStyle}
+                        multiline={true}
                         editable={canEdit}
                         onChangeText={(txt) => { setChangedText(txt); console.log(txt); }}
                         onSubmitEditing={() => onEdit(false)}
                         value={changedText}
                     />
+            </Pressable>
+
+            <View style={styles.actionsContainer}>
+                <Pressable>
+                    <TouchableOpacity style={{ marginRight: 10 }} onPress={() => onEdit(true)} >
+                        <FontAwesomeIcon icon={faEdit} size={20} color={'green'} />
+                    </TouchableOpacity>
                 </Pressable>
 
-                <View style={styles.actionsContainer}>
-                    <Pressable>
-                        <TouchableOpacity style={{ marginRight: 10 }} onPress={() => onEdit(true)} >
-                            <FontAwesomeIcon icon={faEdit} size={20} color={'green'} />
-                        </TouchableOpacity>
-                    </Pressable>
+                <TouchableOpacity style={{ marginRight: 10 }} onPress={() => onDelete(id)}>
+                    <FontAwesomeIcon icon={faTrash} size={20} color={'red'} />
+                </TouchableOpacity>
 
-                    <TouchableOpacity style={{ marginRight: 10 }} onPress={() => onDelete(id)}>
-                        <FontAwesomeIcon icon={faTrash} size={20} color={'red'} />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={{ marginRight: 10 }} onPress={() => onArchived(id)}>
-                        <FontAwesomeIcon icon={faArchive} size={20} color={'grey'} />
-                    </TouchableOpacity>
-
-                </View>
+                <TouchableOpacity style={{ marginRight: 10 }} onPress={() => onArchived(id)}>
+                    <FontAwesomeIcon icon={faArchive} size={20} color={'grey'} />
+                </TouchableOpacity>
 
             </View>
+
+        </View>
 
     );
 }

@@ -1,18 +1,25 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, TextInput } from "react-native";
 import TodoItem from './TodoItem';
 
 
 
-function TodoList({ list, onDeleteItem, onDoneItem, setStatus, onArchivedItem, newText }) {
+function TodoList({ list, onDeleteItem, onDoneItem, setStatus, onArchivedItem, newText, onSearch }) {
 
     const [active, setActive] = React.useState('all')
+
+    const [searchText, setSearchText] = React.useState('')
 
     const setActiveStatus = (status) => {
 
         setStatus(status)
         setActive(status)
 
+    }
+
+    const onSearchItem = (text) => {
+        setSearchText(() => text)
+        onSearch(text)
     }
 
     const styles = StyleSheet.create({
@@ -57,6 +64,18 @@ function TodoList({ list, onDeleteItem, onDoneItem, setStatus, onArchivedItem, n
             color: 'white',
             fontWeight: "800"
         },
+        textInputContainer: {
+            flexDirection: 'row',
+            justifyContent: 'center'
+        },
+
+        textInput: {
+            // width: '50%',
+            // alignSelf: 'center',
+            paddingHorizontal: 10,
+            borderWidth: 1,
+            borderColor: 'grey'
+        }
 
 
     })
@@ -86,6 +105,16 @@ function TodoList({ list, onDeleteItem, onDoneItem, setStatus, onArchivedItem, n
                 <TouchableOpacity onPress={() => setActiveStatus('isArchived')} style={active == 'isArchived' ? styles.activeFilterItem : styles.filterItem}>
                     <Text style={active == 'isArchived' ? styles.activeFilterItemText : styles.filterItemText}>Archived</Text>
                 </TouchableOpacity>
+            </View>
+
+            <View style={styles.textInputContainer}>
+                <TextInput
+                    style={styles.textInput}
+                    placeholder='Поиск задачи'
+                    value={searchText}
+                    onChangeText={onSearchItem}
+                    onSubmitEditing={() => setSearchText('')}
+                />
             </View>
 
             { list.length ?

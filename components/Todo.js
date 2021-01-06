@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 function Todo() {
     const [text, setText] = useState('')
     const [status, setStatus] = useState('all')
+    const [searchText, setSearchText] = useState('')
 
     const [list, setList] = React.useState(
         [
@@ -33,19 +34,29 @@ function Todo() {
         const getData = async () => {
             try {
                 const jsonValue = await AsyncStorage.getItem('todo-list')
-                setList(onValue != null ? JSON.parse(jsonValue) : list)
+                setList(jsonValue != null ? JSON.parse(jsonValue) : list)
             } catch (e) {
             }
         }
         getData()
     }, [])
 
+    const filterBySearchText = (text) => {
+        return status == "all" ? 
+        list.filter(item => item.text.toUpperCase().includes(text.toUpperCase())) 
+        : list.filter(item => item[status]).filter(item => item.text.toUpperCase().includes(text.toUpperCase())) 
+    }
+
 
 
 
     const filteredList = React.useMemo(() => {
-        return status == "all" ? list : list.filter(item => item[status])
-    }, [list, status])
+        
+        if (searchText === '') {
+            return status == "all" ? list : list.filter(item => item[status])
+        }
+        return filterBySearchText(searchText)
+    }, [list, status, searchText])
 
     React.useEffect(() => {
         const storeData = async (list) => {
@@ -59,12 +70,13 @@ function Todo() {
 
     }, [list])
 
+
     const onChangeText = (text) => { setText(text) }
 
 
 
     const setNewText = (id, text) => setList((list) => list.map(item => item.id == id ? { ...item, text } : item))
-    
+
 
 
     const onDeleteItem = (id) => setList(() => list.filter(item => item.id !== id))
@@ -74,15 +86,20 @@ function Todo() {
     const onDoneItem = (id) => setList(() => list.map(item => item.id === id ? { ...item, isRead: !item.isRead } : item))
 
     const onAddItem = () => {
+        console.log('text', text);
+        if (text == '' || text == null) return
         setList((list) => list.concat({ id: new Date(), text, isArchived: false, isRead: false }))
         setText(null)
     }
+
+    const onSearch = (text) => setSearchText(() => text)
 
     return (
         <View style={{ flex: 1 }}>
 
             <ScrollView >
-                <TodoList newText={setNewText} setStatus={(status) => setStatus(status)} onArchivedItem={onArchivedItem} onDeleteItem={onDeleteItem} onDoneItem={onDoneItem} list={filteredList} />
+
+                <TodoList newText={setNewText} onSearch={onSearch} setStatus={(status) => setStatus(status)} onArchivedItem={onArchivedItem} onDeleteItem={onDeleteItem} onDoneItem={onDoneItem} list={filteredList} />
             </ScrollView>
 
             <TextInput
